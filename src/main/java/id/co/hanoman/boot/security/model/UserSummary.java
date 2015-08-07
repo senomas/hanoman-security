@@ -1,11 +1,8 @@
 package id.co.hanoman.boot.security.model;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 public class UserSummary implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -16,7 +13,7 @@ public class UserSummary implements Serializable {
 	
 	String fullName;
 	
-	Set<Role> roles = new HashSet<Role>();
+	List<RoleSummary> roles = new LinkedList<RoleSummary>();
 	
 	public UserSummary() {
 	}
@@ -51,18 +48,18 @@ public class UserSummary implements Serializable {
 		this.fullName = fullName;
 	}
 	
-	public List<Role> getRoles() {
-		return Collections.unmodifiableList(new LinkedList<>(roles));
+	public List<RoleSummary> getRoles() {
+		return roles;
 	}
 	
-	public void setRoles(Set<Role> roles) {
+	public void setRoles(List<RoleSummary> roles) {
 		this.roles = roles;
 	}
 	
-	public void addRole(Role role) {
+	public void addRole(RoleSummary role) {
 		roles.add(role);
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

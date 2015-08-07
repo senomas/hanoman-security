@@ -38,8 +38,7 @@ public class User implements Serializable {
 	@NotNull
 	String login;
 	
-	@Column(nullable = false, length=100)
-	@NotNull
+	@Column(length=100)
 	String password;
 	
 	@Column(nullable = false, length=100)
@@ -55,6 +54,8 @@ public class User implements Serializable {
 	}
 	
 	public User(String login, String password, String fullName) {
+		setPlain(login, password);
+		this.fullName = fullName;
 	}
 	
 	public Long getId() {

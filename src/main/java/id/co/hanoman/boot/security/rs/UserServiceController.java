@@ -1,11 +1,14 @@
 package id.co.hanoman.boot.security.rs;
 
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +20,9 @@ import com.senomas.common.persistence.PageRequestId;
 import com.senomas.common.rs.ResourceNotFoundException;
 
 import id.co.hanoman.boot.security.model.Role;
+import id.co.hanoman.boot.security.model.RoleSummary;
 import id.co.hanoman.boot.security.model.User;
+import id.co.hanoman.boot.security.model.UserRole;
 import id.co.hanoman.boot.security.model.UserSummary;
 import id.co.hanoman.boot.security.repo.RoleRepository;
 import id.co.hanoman.boot.security.repo.UserRepository;
@@ -25,12 +30,17 @@ import id.co.hanoman.boot.security.repo.UserRepository;
 @RestController
 @RequestMapping("/rs/user")
 public class UserServiceController {
+	private static final Logger log = LoggerFactory.getLogger(UserServiceController.class);
 
 	@Autowired
 	UserRepository repository;
 
 	@Autowired
 	RoleRepository roleRepo;
+	
+	public UserServiceController() {
+		log.debug("init");
+	}
 
 	@RequestMapping(value = "/id/{id}", method = { RequestMethod.GET })
 	@Transactional
@@ -38,13 +48,8 @@ public class UserServiceController {
 		User obj = repository.findOne(id);
 		if (obj == null)
 			throw new ResourceNotFoundException("User '" + id + "' not found.");
+		obj.setPassword(null);
 		return obj;
-	}
-
-	@RequestMapping(method = { RequestMethod.GET })
-	@Transactional
-	public List<User> list() {
-		return repository.findAll();
 	}
 
 	@RequestMapping(method = { RequestMethod.POST })
@@ -54,7 +59,15 @@ public class UserServiceController {
 			Thread.sleep(2000);
 		} catch (Exception e) {
 		}
-		return repository.findSummaryFilter(param);
+		PageRequestId<UserSummary> result = repository.findSummaryFilter(param);
+		Map<Long, UserSummary> map = new HashMap<>();
+		for (UserSummary r : result.getContent()) {
+			map.put(r.getId(), r);
+		}
+		for (UserRole ur : repository.getUserRoles(map.keySet())) {
+			map.get(ur.getUserId()).addRole(new RoleSummary(ur.getRole().getCode(), ur.getRole().getName()));
+		}
+		return result;
 	}
 
 	@RequestMapping(method = { RequestMethod.PUT })
@@ -67,7 +80,9 @@ public class UserServiceController {
 			roles.add(roleRepo.findOne(r.getId()));
 		}
 		obj.setRoles(roles);
-		return repository.save(obj);
+		obj = repository.save(obj);
+		obj.setPassword(null);
+		return obj;
 	}
 
 	@RequestMapping(value = "/id/{id}", method = { RequestMethod.DELETE })
@@ -79,6 +94,7 @@ public class UserServiceController {
 		if (obj.getLogin().indexOf("seno") >= 0)
 			throw new RuntimeException("You can't delete me!");
 		repository.delete(obj);
+		obj.setPassword(null);
 		return obj;
 	}
 

@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="app_role")
@@ -18,16 +20,24 @@ public class Role implements Serializable {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	Long id;
 	
+	@Column(nullable = false, length=50)
+	@Size(min=3, max=50)
+	@NotNull
+	String code;
+	
 	@Column(nullable = false, length=100)
+	@Size(min=3, max=100)
+	@NotNull
 	String name;
 	
-	@Column(nullable = false, length=500)
+	@Column(length=500)
 	String description;
 	
 	public Role() {
 	}
 
-	public Role(String name, String description) {
+	public Role(String code, String name, String description) {
+		this.code = code;
 		this.name = name;
 		this.description = description;
 	}
@@ -38,6 +48,14 @@ public class Role implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public String getCode() {
+		return code;
+	}
+	
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getName() {
@@ -60,7 +78,7 @@ public class Role implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((code == null) ? 0 : code.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
@@ -75,10 +93,10 @@ public class Role implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Role other = (Role) obj;
-		if (description == null) {
-			if (other.description != null)
+		if (code == null) {
+			if (other.code != null)
 				return false;
-		} else if (!description.equals(other.description))
+		} else if (!code.equals(other.code))
 			return false;
 		if (id == null) {
 			if (other.id != null)
@@ -95,6 +113,6 @@ public class Role implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Role [id=" + id + ", name=" + name + ", description=" + description + "]";
+		return "Role [id=" + id + ", code=" + code + ", name=" + name + ", description=" + description + "]";
 	}
 }

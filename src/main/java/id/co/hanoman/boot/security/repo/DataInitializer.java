@@ -1,5 +1,7 @@
 package id.co.hanoman.boot.security.repo;
 
+import java.util.Random;
+
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
@@ -28,6 +30,8 @@ public class DataInitializer {
 
 	@Autowired
 	protected RoleRepository roleRepo;
+	
+	private final static Random rnd = new Random();
 
 	@PostConstruct
 	public void populateDummyData() {
@@ -51,19 +55,19 @@ public class DataInitializer {
 	}
 
 	protected void initRoles() {
-		Role role = roleRepo.findByName("admin");
+		Role role = roleRepo.findByCode("admin");
 		if (role == null) {
-			role = new Role("admin", "Administrator");
+			role = new Role("admin", "Administrator", "Administrator");
 			roleRepo.save(role);
 		}
-		role = roleRepo.findByName("opr");
+		role = roleRepo.findByCode("opr");
 		if (role == null) {
-			role = new Role("opr", "Operator");
+			role = new Role("opr", "Operator", "Operator");
 			roleRepo.save(role);
 		}
-		role = roleRepo.findByName("user");
+		role = roleRepo.findByCode("user");
 		if (role == null) {
-			role = new Role("user", "User");
+			role = new Role("user", "User", "User");
 			roleRepo.save(role);
 		}
 	}
@@ -72,20 +76,38 @@ public class DataInitializer {
 		User user = userRepo.findByLogin("seno");
 		if (user == null) {
 			user = new User("seno", "dodol123", "Seno");
-			user.addRole(roleRepo.findByName("admin"));
+			user.addRole(roleRepo.findByCode("admin"));
+			user.addRole(roleRepo.findByCode("opr"));
+			user.addRole(roleRepo.findByCode("user"));
 			userRepo.save(user);
 		}
 		user = userRepo.findByLogin("opr1");
 		if (user == null) {
 			user = new User("opr1", "dodol123", "Operator 1");
-			user.addRole(roleRepo.findByName("opr"));
+			user.addRole(roleRepo.findByCode("opr"));
 			userRepo.save(user);
 		}
-		user = userRepo.findByLogin("user1");
+		user = userRepo.findByLogin("admin1");
 		if (user == null) {
-			user = new User("user1", "dodol123", "User 1");
-			user.addRole(roleRepo.findByName("user"));
+			user = new User("admin1", "dodol123", "Admin 1");
+			user.addRole(roleRepo.findByCode("admin"));
+			user.addRole(roleRepo.findByCode("opr"));
+			user.addRole(roleRepo.findByCode("user"));
 			userRepo.save(user);
+		}
+		for (int i=1; i<=400; i++) {
+			user = userRepo.findByLogin("user"+i);
+			if (user == null) {
+				user = new User("user"+i, "dodol123", "User "+i);
+				userRepo.save(user);
+				user.addRole(roleRepo.findByCode("user"));
+				switch (rnd.nextInt(3)) {
+				case 1:
+					user.addRole(roleRepo.findByCode("admin"));
+				case 2:
+					user.addRole(roleRepo.findByCode("opr"));
+				}
+			}
 		}
 	}
 

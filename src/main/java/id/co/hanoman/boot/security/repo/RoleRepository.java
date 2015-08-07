@@ -10,6 +10,6 @@ public interface RoleRepository extends CrudRepository<Role, Long> {
 
 	List<Role> findAll();
 
-	Role findByName(String name);
+	Role findByCode(String code);
 	
 }
