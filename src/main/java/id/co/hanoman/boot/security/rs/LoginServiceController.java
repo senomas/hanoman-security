@@ -64,6 +64,7 @@ public class LoginServiceController {
 			String sx = U.randomHex(8);
 			request.setSalt(sx + U
 					.toHex(md.digest(U.getBytes(sx + req.getRemoteAddr() + "|" + request.getTimestamp().getTime()))));
+			tokenStore.putSalt(request.getSalt());
 			return request;
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(), e);
@@ -77,11 +78,13 @@ public class LoginServiceController {
 			throw new UnauthorizedException("Invalid timestamp");
 		String sx = request.getSalt().substring(0, 8);
 		try {
-			log.info("login request "+U.dump(request));
+			log.info("login request " + U.dump(request));
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
 			String salt = sx
 					+ U.toHex(md.digest(U.getBytes(sx + req.getRemoteAddr() + "|" + request.getTimestamp().getTime())));
 			if (!salt.equals(request.getSalt()))
+				throw new UnauthorizedException("Invalid salt");
+			if (!tokenStore.hasSalt(salt))
 				throw new UnauthorizedException("Invalid salt");
 			User user = repository.findByLogin(request.getLogin());
 			if (user == null)
@@ -101,7 +104,7 @@ public class LoginServiceController {
 			repository.save(user);
 			return tokenStore.create(new UserSummary(user));
 		} catch (RuntimeException e) {
-			log.warn("Login error "+e.getMessage(), e);
+			log.warn("Login error " + e.getMessage(), e);
 			throw e;
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e.getMessage(), e);

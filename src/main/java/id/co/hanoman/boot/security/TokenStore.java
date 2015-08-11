@@ -7,5 +7,9 @@ public interface TokenStore {
 	LoginUser get(String token);
 	
 	LoginUser create(UserSummary user);
+	
+	void putSalt(String salt);
+	
+	boolean hasSalt(String salt);
 
 }
