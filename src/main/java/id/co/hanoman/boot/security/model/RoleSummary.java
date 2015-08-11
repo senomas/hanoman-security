@@ -2,6 +2,10 @@ package id.co.hanoman.boot.security.model;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class RoleSummary implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -15,6 +19,11 @@ public class RoleSummary implements Serializable {
 	public RoleSummary(String code, String name) {
 		this.code = code;
 		this.name = name;
+	}
+
+	public RoleSummary(Role role) {
+		code = role.getCode();
+		name = role.getName();
 	}
 
 	public String getCode() {

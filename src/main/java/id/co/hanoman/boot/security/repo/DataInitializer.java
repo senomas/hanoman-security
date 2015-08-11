@@ -1,5 +1,7 @@
 package id.co.hanoman.boot.security.repo;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
@@ -95,17 +97,24 @@ public class DataInitializer {
 			user.addRole(roleRepo.findByCode("user"));
 			userRepo.save(user);
 		}
-		for (int i=1; i<=400; i++) {
-			user = userRepo.findByLogin("user"+i);
-			if (user == null) {
+		Map<String, Integer> map = new HashMap<>();
+		for (int i=1; i<=400; i++) map.put("user"+i, i);
+		for (User u : userRepo.findAll()) {
+			map.remove(u.getLogin());
+		}
+		if (!map.isEmpty()) {
+			Role roleUser = roleRepo.findByCode("user");
+			Role roleAdmin = roleRepo.findByCode("admin");
+			Role roleOpr = roleRepo.findByCode("opr");
+			for (int i : map.values()) {
 				user = new User("user"+i, "dodol123", "User "+i);
 				userRepo.save(user);
-				user.addRole(roleRepo.findByCode("user"));
+				user.addRole(roleUser);
 				switch (rnd.nextInt(3)) {
 				case 1:
-					user.addRole(roleRepo.findByCode("admin"));
+					user.addRole(roleAdmin);
 				case 2:
-					user.addRole(roleRepo.findByCode("opr"));
+					user.addRole(roleOpr);
 				}
 			}
 		}

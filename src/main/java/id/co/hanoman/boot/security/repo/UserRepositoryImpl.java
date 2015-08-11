@@ -18,6 +18,7 @@ import com.senomas.common.persistence.Filter2;
 import com.senomas.common.persistence.PageRequestId;
 
 import id.co.hanoman.boot.security.model.Role;
+import id.co.hanoman.boot.security.model.RoleSummary;
 import id.co.hanoman.boot.security.model.User;
 import id.co.hanoman.boot.security.model.UserRole;
 import id.co.hanoman.boot.security.model.UserSummary;
@@ -28,6 +29,20 @@ public class UserRepositoryImpl extends AbstractCustomRepository implements User
 	
 	@Autowired
 	EntityManager entityManager;
+	
+	@Override
+	public UserSummary getSummaryByLogin(String login) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<User> cq = builder.createQuery(User.class);
+		Root<User> root = cq.from(User.class);
+		cq.where(builder.equal(root.get("login"), login));
+		User user = entityManager.createQuery(cq).getSingleResult();
+		UserSummary userSummary = new UserSummary(user.getId(), user.getLogin(), user.getFullName());
+		for (Role r : user.getRoles()) {
+			userSummary.addRole(new RoleSummary(r.getCode(), r.getName()));
+		}
+		return userSummary;
+	}
 
 	@Override
 	public PageRequestId<UserSummary> findSummaryFilter(final UserPageParam param) {

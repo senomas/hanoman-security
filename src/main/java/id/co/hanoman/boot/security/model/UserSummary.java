@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class UserSummary implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -22,6 +26,15 @@ public class UserSummary implements Serializable {
 		this.id = id;
 		this.login = login;
 		this.fullName = fullName;
+	}
+	
+	public UserSummary(User user) {
+		id = user.getId();
+		login = user.getLogin();
+		fullName = user.getFullName();
+		for (Role r : user.getRoles()) {
+			roles.add(new RoleSummary(r));
+		}
 	}
 	
 	public Long getId() {

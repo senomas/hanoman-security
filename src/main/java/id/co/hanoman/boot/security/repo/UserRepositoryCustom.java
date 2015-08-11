@@ -11,6 +11,8 @@ import id.co.hanoman.boot.security.rs.UserPageParam;
 
 public interface UserRepositoryCustom {
 
+	UserSummary getSummaryByLogin(String id);
+	
 	PageRequestId<UserSummary> findSummaryFilter(UserPageParam param);
 	
 	List<UserRole> getUserRoles(Collection<Long> userIds);

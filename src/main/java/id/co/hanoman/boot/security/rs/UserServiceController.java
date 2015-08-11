@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.senomas.common.persistence.PageRequestId;
 import com.senomas.common.rs.ResourceNotFoundException;
 
+import id.co.hanoman.boot.security.TokenStore;
 import id.co.hanoman.boot.security.model.Role;
 import id.co.hanoman.boot.security.model.RoleSummary;
 import id.co.hanoman.boot.security.model.User;
@@ -37,7 +38,10 @@ public class UserServiceController {
 
 	@Autowired
 	RoleRepository roleRepo;
-	
+
+	@Autowired
+	TokenStore tokenStore;
+
 	public UserServiceController() {
 		log.debug("init");
 	}

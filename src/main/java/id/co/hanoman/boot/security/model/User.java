@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,45 +20,51 @@ import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.senomas.common.U;
 
 @Entity
-@Table(name="app_user")
+@Table(name = "app_user", uniqueConstraints = { @UniqueConstraint(columnNames = { "login" }) })
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Id 
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	Long id;
-	
-	@Column(nullable = false, length=100)
-	@Size(min=4, max=100)
+
+	@Column(nullable = false, length = 100)
+	@Size(min = 4, max = 100)
 	@NotNull
 	String login;
-	
-	@Column(length=100)
+
+	@Column(length = 100)
 	String password;
-	
-	@Column(nullable = false, length=100)
-	@Size(min=4, max=100)
+
+	@Column(nullable = false, length = 100)
+	@Size(min = 4, max = 100)
 	@NotNull
 	String fullName;
-	
-	@ManyToMany(fetch=FetchType.LAZY, cascade={CascadeType.MERGE})
-	@JoinTable(name="app_user_roles")
+
+	Date lastLogin;
+
+	@Column(length = 100)
+	String lastSalt;
+
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
+	@JoinTable(name = "app_user_roles")
 	Set<Role> roles = new HashSet<Role>();
-	
+
 	public User() {
 	}
-	
+
 	public User(String login, String password, String fullName) {
 		setPlain(login, password);
 		this.fullName = fullName;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -65,50 +72,66 @@ public class User implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public String getLogin() {
 		return login;
 	}
-	
+
 	public void setLogin(String login) {
 		this.login = login;
 	}
-	
+
 	public String getPassword() {
 		return password;
 	}
-	
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	public void setPlain(String login, String password) {
 		try {
 			this.login = login;
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			md.update(U.getBytes(login+"|"+password));
+			md.update(U.getBytes(login + "|" + password));
 			this.password = U.toHex(md.digest());
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
-	
+
 	public String getFullName() {
 		return fullName;
 	}
-	
+
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
 	}
-	
+
+	public Date getLastLogin() {
+		return lastLogin;
+	}
+
+	public void setLastLogin(Date lastLogin) {
+		this.lastLogin = lastLogin;
+	}
+
+	public String getLastSalt() {
+		return lastSalt;
+	}
+
+	public void setLastSalt(String lastSalt) {
+		this.lastSalt = lastSalt;
+	}
+
 	public List<Role> getRoles() {
 		return Collections.unmodifiableList(new LinkedList<>(roles));
 	}
-	
+
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
-	
+
 	public void addRole(Role role) {
 		roles.add(role);
 	}

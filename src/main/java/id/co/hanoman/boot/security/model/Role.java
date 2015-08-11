@@ -8,31 +8,33 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name="app_role")
+@Table(name = "app_role", uniqueConstraints = { @UniqueConstraint(columnNames = { "code" }),
+		@UniqueConstraint(columnNames = { "name" }) })
 public class Role implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Id 
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	Long id;
-	
-	@Column(nullable = false, length=50)
-	@Size(min=3, max=50)
+
+	@Column(nullable = false, length = 50)
+	@Size(min = 3, max = 50)
 	@NotNull
 	String code;
-	
-	@Column(nullable = false, length=100)
-	@Size(min=3, max=100)
+
+	@Column(nullable = false, length = 100)
+	@Size(min = 3, max = 100)
 	@NotNull
 	String name;
-	
-	@Column(length=500)
+
+	@Column(length = 500)
 	String description;
-	
+
 	public Role() {
 	}
 
@@ -49,11 +51,11 @@ public class Role implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public String getCode() {
 		return code;
 	}
-	
+
 	public void setCode(String code) {
 		this.code = code;
 	}
@@ -65,11 +67,11 @@ public class Role implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public String getDescription() {
 		return description;
 	}
-	
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
