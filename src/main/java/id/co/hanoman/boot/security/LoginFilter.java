@@ -33,13 +33,12 @@ public class LoginFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		if (request instanceof HttpServletRequest) {
 			HttpServletRequest req = (HttpServletRequest) request;
-			String uri = req.getRequestURI() + (req.getQueryString() != null ? '?' + req.getQueryString() : "");
 			String auth = req.getHeader("authorization");
 			if (auth != null && auth.startsWith("Bearer ")) {
 				String token = auth.substring(7).trim();
-				SecurityContextHolder.getContext().setAuthentication(new TokenAuthentication(token, uri));
+				SecurityContextHolder.getContext().setAuthentication(new TokenAuthentication(token));
 			} else {
-				SecurityContextHolder.getContext().setAuthentication(new TokenAuthentication(null, uri));
+				SecurityContextHolder.getContext().setAuthentication(new TokenAuthentication(null));
 			}
 		} else {
 			throw new RuntimeException("Not supported.");

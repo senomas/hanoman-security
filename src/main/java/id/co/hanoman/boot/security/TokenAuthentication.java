@@ -13,22 +13,16 @@ import id.co.hanoman.boot.security.model.UserSummary;
 public class TokenAuthentication implements Authentication {
 	private static final long serialVersionUID = 1L;
 	private boolean authenticated = false;
-	private final String resource;
 	private final String token;
 	private UserSummary user;
 	private Set<GrantedAuthority> authorities = new HashSet<>();
 
-	public TokenAuthentication(String token, String resource) {
+	public TokenAuthentication(String token) {
 		this.token = token;
-		this.resource = resource;
 	}
 	
 	public String getToken() {
 		return token;
-	}
-	
-	public String getResource() {
-		return resource;
 	}
 	
 	public UserSummary getUser() {

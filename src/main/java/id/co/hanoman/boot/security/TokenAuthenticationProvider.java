@@ -21,7 +21,7 @@ public class TokenAuthenticationProvider implements AuthenticationProvider {
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		TokenAuthentication tokenAuth = (TokenAuthentication) authentication;
 		LoginUser user = tokenStore.get(tokenAuth.getToken());
-		log.info("AUTH "+U.dump(tokenAuth)+"\nUSER "+U.dump(user));
+		if (log.isDebugEnabled()) log.debug("AUTH "+U.dump(tokenAuth)+"\nUSER "+U.dump(user));
 		tokenAuth.setUser(user);
 		return tokenAuth;
 	}
