@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,6 +48,7 @@ public class UserServiceController {
 	}
 
 	@RequestMapping(value = "/id/{id}", method = { RequestMethod.GET })
+	@PreAuthorize("hasRole('admin')")
 	@Transactional
 	public User get(@PathVariable("id") Long id) {
 		User obj = repository.findOne(id);
@@ -57,6 +59,7 @@ public class UserServiceController {
 	}
 
 	@RequestMapping(method = { RequestMethod.POST })
+	@PreAuthorize("hasRole('admin')")
 	@Transactional
 	public PageRequestId<UserSummary> listSummary(@RequestBody UserPageParam param) {
 		try {
@@ -75,6 +78,7 @@ public class UserServiceController {
 	}
 
 	@RequestMapping(method = { RequestMethod.PUT })
+	@PreAuthorize("hasRole('admin')")
 	@Transactional
 	public User save(@RequestBody User obj) {
 		if (obj.getLogin().indexOf("xxx") >= 0)
@@ -90,6 +94,7 @@ public class UserServiceController {
 	}
 
 	@RequestMapping(value = "/id/{id}", method = { RequestMethod.DELETE })
+	@PreAuthorize("hasRole('admin')")
 	@Transactional
 	public User delete(@PathVariable("id") Long id) {
 		User obj = repository.findOne(id);
